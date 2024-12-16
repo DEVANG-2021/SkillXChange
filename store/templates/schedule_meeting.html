@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div>
+        <h3 class="text-center">Schedule a Meeting</h3>
+       
+    </div>
+    <hr>
+    <div id="message-box"></div>
+    <form id="scheduleMeetingForm">
+        <div class="form-group">
+            <label for="meeting_title">Meeting Title</label>
+            <input type="text" id="meeting_title" class="form-control" placeholder="Enter meeting title" required>
+        </div>
+        <div class="form-group">
+            <label for="meeting_date">Meeting Date</label>
+            <input type="date" id="meeting_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="meeting_time">Meeting Time</label>
+            <input type="time" id="meeting_time" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="customers">Select Connections</label>
+            <select id="customers" class="form-control" multiple>
+                {% for customer in connected_customers %}
+                    <option value="{{ customer.email }}">{{ customer.first_name }} {{ customer.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="button" id="scheduleButton" class="btn btn-primary mb-4">Schedule Meeting
+            <div class="spinner-border text-light ml-1 d-none" id="spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </button>
+        <a href="/scheduled_meetings/" id="scheduleButton" class="btn btn-primary mb-4">Scheduled Meetings <i class="fas fa-calendar-check ml-1"></i></a>
+    </form>
+</div>
+
+<script>
+    document.getElementById('scheduleButton').addEventListener('click', async () => {
+        const meetingTitle = document.getElementById('meeting_title').value;
+        const meetingDate = document.getElementById('meeting_date').value;
+        const meetingTime = document.getElementById('meeting_time').value;
+        const customerSelect = document.getElementById('customers');
+        const selectedCustomers = Array.from(customerSelect.selectedOptions).map(opt => opt.value);
+
+        if (!meetingDate || !meetingTime) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.innerHTML = '<div class="alert alert-danger">Please select both a date and time for the meeting.</div>';
+            return;
+        }
+
+        const csrfToken = '{{ csrf_token }}'; // Pass CSRF token from Django template
+    
+        document.getElementById('spinner').classList.remove("d-none");
+        const response = await fetch("{% url 'schedule_meeting' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({
+                meeting_title: meetingTitle,
+                meeting_date: meetingDate,
+                meeting_time: meetingTime,
+                selected_customers: selectedCustomers
+            })
+        });
+        
+        const messageBox = document.getElementById('message-box');
+        const result = await response.json();
+        if (response.ok) {
+            messageBox.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+        } else {
+            messageBox.innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+        }
+        document.getElementById('spinner').classList.add("d-none");
+        setTimeout(function(){ window.location.reload(); }, 4000);
+    });
+</script>
+
+{% endblock %}

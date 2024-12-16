@@ -1,0 +1,728 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+	/* The snackbar - position it at the bottom and in the middle of the screen */
+	#snackbar {
+		visibility: hidden; /* Hidden by default. Visible on click */
+		min-width: 250px; /* Set a default minimum width */
+		margin-left: -125px; /* Divide value of min-width by 2 */
+		background-color: #333; /* Black background color */
+		color: #fff; /* White text color */
+		font-weight: 700;
+		text-align: center; /* Centered text */
+		border-radius: 15px; /* Rounded borders */
+		padding: 16px; /* Padding */
+		position: fixed; /* Sit on top of the screen */
+		z-index: 1; /* Add a z-index if needed */
+		left: 48%; /* Center the snackbar */
+		bottom: 30px; /* 30px from the bottom */
+	}
+
+	/* Show the snackbar when clicking on a button (class added with JavaScript) */
+	#snackbar.show {
+		visibility: visible; /* Show the snackbar */
+		/* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+		However, delay the fade out process for 2.5 seconds */
+		-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+		animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	/* Animations to fade the snackbar in and out */
+	@-webkit-keyframes fadein {
+		from {bottom: 0; opacity: 0;}
+		to {bottom: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+		from {bottom: 0; opacity: 0;}
+		to {bottom: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+		from {bottom: 30px; opacity: 1;}
+		to {bottom: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+		from {bottom: 30px; opacity: 1;}
+		to {bottom: 0; opacity: 0;}
+	}
+</style>
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load cart %}
+{% load custom_filter %}
+
+<!-- body -->
+
+		<section style="background-color: #eee;">
+			<div class="container py-5">
+				{% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+			  <!-- <div class="row">
+				<div class="col">
+				  <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
+					<ol class="breadcrumb mb-0">
+					  <li class="breadcrumb-item"><a href="#">Home</a></li>
+					  <li class="breadcrumb-item"><a href="#">User</a></li>
+					  <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+					</ol>
+				  </nav>
+				</div>
+			  </div> -->
+		  
+			  <div class="row">
+				<div class="col-lg-4">
+				  <div class="card mb-4">
+					<p class="py-2 px-3"> <a href="#" class="ml-2 mt-2 float-right rounded-circle" data-bs-toggle="modal" data-bs-target="#updateImageModal"><span class="text-primary font-italic me-1"><span class="icon-circle">
+						<i class="fas fa-pen"></i>
+					</span></span> </a>	</p>
+					<div class="card-body text-center">	
+					  <img src="{{ customer.image.url }}" alt="avatar"
+						class="rounded-circle img-fluid" style="width: 150px;">
+					  <h5 class="my-3">{{ customer.first_name }} {{ customer.last_name }}</h5>
+					  <p class="text-muted mb-1">{{ customer.position }}</p>
+					  <!-- <p class="text-muted mb-4">Bay Area, San Francisco, CA</p> -->
+					  <!-- <div class="d-flex justify-content-center mb-2">
+						<button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary mx-2">Follow</button>
+						<button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
+					  </div> -->
+					</div>
+				  </div>
+				  <div class="card mb-4">
+					<div class="card-body text-center">	
+					  <i class="fas fa-coins credit-icon" style="font-size: 45px;"></i> 
+					  <h3 class="my-1">{{ customer.credit }}</h3>
+					  <p class="text-muted mb-1">Available Credits</p>
+					  <a href="#" class="btn btn-outline-primary rounded" data-bs-toggle="modal" data-bs-target="#creditsModal">Send Credits <i class="fas fa-paper-plane ml-1" aria-hidden="true"></i></a>
+					</div>
+				  </div>
+				  <div class="card mb-4">
+					<div class="card-body text-center">	
+					  <i class="fas fa-users credit-icon" style="font-size: 45px;"></i> 
+					  <h3 class="my-1">{{ count }}</h3>
+					  <p class="text-muted mb-1">Connections </p>
+					  <a href="#" class="btn btn-outline-primary rounded" data-bs-toggle="modal" 
+					  data-bs-target="#connectionsModal">Connections <i class="fas fa-paper-plane ml-1" aria-hidden="true"></i></a>
+					</div>
+				  </div>
+				  <!-- <div class="container mt-5 text-center">
+					<button 
+					  class="btn btn-light shadow-sm border d-flex flex-column align-items-center justify-content-center p-4" 
+					  data-bs-toggle="modal" 
+					  data-bs-target="#connectionsModal">
+					  <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+					  <span class="mt-2 fw-bold">123 Connections</span>
+					</button>
+				  </div> -->
+				  <div class="card mb-4 mb-lg-0">
+					<div class="card-body p-0">
+						<p class="py-3 px-3"> <b>Social Links</b> <a href="#" class="ml-2 float-right rounded-circle" data-bs-toggle="modal" data-bs-target="#updateSocialLinksModal"><span class="text-primary font-italic me-1"><span class="icon-circle">
+							<i class="fas fa-pen"></i>
+						</span></span> </a>
+						  </p>
+					  <ul class="list-group list-group-flush rounded-3">
+						<!-- <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+						  <i class="fas fa-linkedin fa-lg text-warning"></i>
+						  <p class="mb-0">{{ customer.linkedin }}</p>
+						</li> -->
+						<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+						  <i class="fab fa-linkedin fa-lg text-body mr-2" style="color: #0765ad;"></i>
+						  <p class="mb-0">{{ customer.linkedin }}</p>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+						  <i class="fab fa-twitter fa-lg mr-2" style="color: #55acee;"></i>
+						  <p class="mb-0">{{ customer.twitter }}</p>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+						  <i class="fab fa-instagram fa-lg mr-2" style="color: #ac2bac;"></i>
+						  <p class="mb-0">{{ customer.instagram }}</p>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center p-3">
+						  <i class="fab fa-facebook-f fa-lg mr-2" style="color: #3b5998;"></i>
+						  <p class="mb-0">{{ customer.facebook }}</p>
+						</li>
+					  </ul>
+					</div>
+				  </div>
+				</div>
+				<div class="col-lg-8">
+				  <div class="card mb-4">
+					<div class="card-body">
+						<p class="py-3 px-3"> <b>Profile Details</b> <a href="#" class="ml-2 float-right rounded-circle" data-bs-toggle="modal" data-bs-target="#updatePersonalDetailsModal"><span class="text-primary font-italic me-1"><span class="icon-circle">
+							<i class="fas fa-pen"></i>
+						</span></span> </a>
+						  </p>
+						  <hr>
+					  <div class="row">
+						<div class="col-sm-3">
+						  <p class="mb-0"><b>Full Name</b></p>
+						</div>
+						<div class="col-sm-9">
+						  <p class="text-muted mb-0">{{ customer.first_name }} {{ customer.last_name }}</p>
+						</div>
+					  </div>
+					  <hr>
+					  <div class="row">
+						<div class="col-sm-3">
+						  <p class="mb-0"><b>Email</b></p>
+						</div>
+						<div class="col-sm-9">
+						  <p class="text-muted mb-0">{{ customer.email }}</p>
+						</div>
+					  </div>
+					  <hr>
+					  <div class="row">
+						<div class="col-sm-3">
+						  <p class="mb-0"><b>Phone</b></p>
+						</div>
+						<div class="col-sm-9">
+						  <p class="text-muted mb-0">{{ customer.phone }}</p>
+						</div>
+					  </div>
+					 
+					  <!-- <div class="row">
+						<div class="col-sm-3">
+						  <p class="mb-0">Mobile</p>
+						</div>
+						<div class="col-sm-9">
+						  <p class="text-muted mb-0">(098) 765-4321</p>
+						</div>
+					  </div> -->
+					  <hr>
+					  <div class="row">
+						<div class="col-sm-3">
+						  <p class="mb-0"><b>Position</b></p>
+						</div>
+						<div class="col-sm-9">
+						  <p class="text-muted mb-0">{{ customer.position }}</p>
+						</div>
+					  </div>
+					  <hr>
+					  <div class="row">
+						<div class="col-sm-3">
+						  <p class="mb-0"><b>Address</b></p>
+						</div>
+						<div class="col-sm-9">
+						  <p class="text-muted mb-0">{{ customer.address }}</p>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="row">
+					<div class="col-md-12">
+					  <div class="card mb-4 mb-md-0">
+						<div class="card-body">
+						  <p class="mb-4"> <b>Skills</b> <a href="#" class="ml-2 float-right rounded-circle" data-bs-toggle="modal" data-bs-target="#skillsModal"><span class="text-primary font-italic me-1"><span class="icon-circle">
+							<i class="fas fa-pen"></i>
+						</span></span> </a>
+						  </p>
+						  {% for skill in skills %}
+						  <!-- <p class="mb-1" style="font-size: .77rem;">{{ skill}}</p> -->
+						  	<span class="badge bg-primary text-white py-2 px-3" style="font-size: 1rem; border-radius: 50px;">{{ skill}}</span>
+					  	  {% endfor %}
+						  <!-- <p class="mb-1" style="font-size: .77rem;">Web Design</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
+						  <div class="progress rounded mb-2" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div> -->
+						</div>
+					  </div>
+					</div>
+					<!-- <div class="col-md-12 mt-3">
+						<div class="card mb-4 mb-md-0">
+						  <div class="card-body">
+							<p class="mb-4"> <b>Identity Proof</b> <a href="#" class="ml-2 float-right rounded-circle" data-bs-toggle="modal" data-bs-target="#updateLicenseDetailsModal"><span class="text-primary font-italic me-1"><span class="icon-circle">
+								<i class="fas fa-pen"></i>
+							</span></span> </a>
+							  </p>
+							  <hr>
+							  
+							  <div class="row">
+									<div class="col-sm-6">
+									<p class="mb-0"><b>Government ID Number (i.e. License)</b></p>
+									</div>
+									{% if customer.license_number %}
+										<div class="col-sm-6">
+											<p class="text-muted mb-0">{{ customer.license_number }}</p>
+										</div>
+										
+									{% else %}
+										<div class="col-sm-6">
+											<p class="text-muted mb-0">None</p>
+										</div>
+									{% endif %}
+							  </div>
+							  <hr>
+							
+						  </div>
+						</div>
+					</div> -->
+					<!-- <div class="col-md-6">
+					  <div class="card mb-4 mb-md-0">
+						<div class="card-body">
+						  <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
+						  </p>
+						  <p class="mb-1" style="font-size: .77rem;">Web Design</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
+						  <div class="progress rounded" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						  <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
+						  <div class="progress rounded mb-2" style="height: 5px;">
+							<div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
+							  aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+						</div>
+					  </div>
+					</div> -->
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  </section>
+		
+
+		<div class="modal fade" id="skillsModal" tabindex="-1" aria-labelledby="skillsModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="skillsModalLabel">Add Skills</h5>
+					</div>
+					<div class="modal-body">
+						<!-- Input to add new skill -->
+						<div class="input-group mb-3">
+							<input type="text" id="skillInput" class="form-control" placeholder="Enter skill">
+							<button class="btn btn-outline-secondary" type="button" onclick="addSkill()">Add</button>
+						</div>
+						<!-- Area to display added skills as tags -->
+						<div id="skillsContainer" class="d-flex flex-wrap gap-2">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						<!-- Save skills button -->
+						<button type="button" class="btn btn-primary" onclick="saveSkills()">Save Skills</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="snackbar"></div>
+
+		<div class="modal fade" id="creditsModal" tabindex="-1" aria-labelledby="creditsModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="creditsModalLabel">Send Credits</h5>
+					</div>
+					<div class="modal-body">
+						<!-- Input to add new skill -->
+						<label><b>Enter an Email Address of Connection</b></label> 
+						<div class="input-group mb-3">
+							<input type="text" id="emailInput" class="form-control" placeholder="Enter Email Address">
+						</div>
+
+						<label><b>Enter Credits you want to send</b></label> 
+						<div class="input-group mb-3">
+							<input type="number" id="creditInput" class="form-control" placeholder="Enter Credits">
+						</div>
+						<!-- Area to display added skills as tags -->
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						<!-- Save skills button -->
+						<button type="button" class="btn btn-primary" id="sendCreditButton">Send</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+
+		<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title" id="successModalLabel">Success</h5>
+				</div>
+				<div class="modal-body">
+				  Skills updated successfully!
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-primary" id="reloadButton">OK</button>
+				</div>
+			  </div>
+			</div>
+		</div>
+
+
+		<!-- Update Image Modal -->
+		<div class="modal fade" id="updateImageModal" tabindex="-1" aria-labelledby="updateImageLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="updateImageLabel">Update Profile Image</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<form method="POST" action="/update/image/" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="modal-body">
+					<div class="mb-3">
+					<label for="image" class="form-label">Upload New Profile Image</label>
+					<input type="file" class="form-control" id="image" name="image" required>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Update</button>
+				</div>
+				</form>
+			</div>
+			</div>
+		</div>
+
+		<!-- Update Personal Details Modal -->
+		<div class="modal fade" id="updatePersonalDetailsModal" tabindex="-1" aria-labelledby="updatePersonalDetailsLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="updatePersonalDetailsLabel">Update Personal Details</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<form method="POST" action="update/personal-details/">
+				{% csrf_token %}
+				<div class="modal-body">
+					<div class="mb-3">
+					<label for="first_name" class="form-label">First Name</label>
+					<input type="text" class="form-control" id="first_name" name="first_name" value="{{ customer.first_name }}" required>
+					</div>
+					<div class="mb-3">
+					<label for="last_name" class="form-label">Last Name</label>
+					<input type="text" class="form-control" id="last_name" name="last_name" value="{{ customer.last_name }}" required>
+					</div>
+					<div class="mb-3">
+					<label for="phone" class="form-label">Phone</label>
+					<input type="text" class="form-control" id="phone" name="phone" value="{{ customer.phone }}" required>
+					</div>
+					<div class="mb-3">
+					<label for="position" class="form-label">Position</label>
+					<input type="text" class="form-control" id="position" name="position" value="{{ customer.position }}">
+					</div>
+					<div class="mb-3">
+					<label for="address" class="form-label">Address</label>
+					<input type="text" class="form-control" id="address" name="address" value="{{ customer.address }}">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Update</button>
+				</div>
+				</form>
+			</div>
+			</div>
+		</div>
+		
+
+	    <!-- Update Social Links Modal -->
+		<div class="modal fade" id="updateSocialLinksModal" tabindex="-1" aria-labelledby="updateSocialLinksLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="updateSocialLinksLabel">Update Social Links</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<form method="POST" action="/update/social-links/">
+				{% csrf_token %}
+				<div class="modal-body">
+					<div class="mb-3">
+					<label for="facebook" class="form-label">Facebook</label>
+					<input type="text" class="form-control" id="facebook" name="facebook" value="{{ customer.facebook }}">
+					</div>
+					<div class="mb-3">
+					<label for="instagram" class="form-label">Instagram</label>
+					<input type="text" class="form-control" id="instagram" name="instagram" value="{{ customer.instagram }}">
+					</div>
+					<div class="mb-3">
+					<label for="twitter" class="form-label">Twitter</label>
+					<input type="text" class="form-control" id="twitter" name="twitter" value="{{ customer.twitter }}">
+					</div>
+					<div class="mb-3">
+					<label for="linkedin" class="form-label">LinkedIn</label>
+					<input type="text" class="form-control" id="linkedin" name="linkedin" value="{{ customer.linkedin }}">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Update</button>
+				</div>
+				</form>
+			</div>
+			</div>
+		</div>
+  
+
+		<!-- Update License Details Modal -->
+		<div class="modal fade" id="updateLicenseDetailsModal" tabindex="-1" aria-labelledby="updateLicenseDetailsLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="updateLicenseDetailsLabel">Update License Details</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<form method="POST" action="/update/license-details/" enctype="multipart/form-data" >
+				{% csrf_token %}
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="license_number" class="form-label">License Number</label>
+						<input type="text" class="form-control" id="license_number" name="license_number" value="{{ customer.license_number }}" required>
+					</div>
+					<div class="mb-3">
+						<label for="license_image" class="form-label">Upload License Image</label>
+						<input type="file" class="form-control" id="license_image" name="license_image">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Update</button>
+				</div>
+				</form>
+			</div>
+			</div>
+		</div>
+   
+		<!-- connection model -->
+		<div class="modal fade" id="connectionsModal" tabindex="-1" aria-labelledby="connectionsModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title" id="connectionsModalLabel">Connections</h5>
+				  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<ul class="list-group">
+						{% if connections %}
+							{% for connection in connections %}
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+								{{connection.first_name}} {{connection.last_name}}
+								<a href="{% url 'chat_window' connection.id %}" class="ml-2 float-right rounded-circle"><span class="text-primary font-italic me-1"><span class="icon-circle">
+									<i class="fas fa-comment"></i>
+								</span></span> </a>
+								</li>
+								<!-- <li class="list-group-item d-flex justify-content-between align-items-center">
+								Jane Smith
+								<button class="btn btn-primary btn-sm">Chat</button>
+								</li>
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+								Alice Johnson
+								<button class="btn btn-primary btn-sm">Chat</button>
+								</li> -->
+							{% endfor %}
+						{% else %}
+							<p>No connections found.</p>
+						{% endif %}
+					</ul>
+				</div>
+			  </div>
+			</div>
+		  </div>
+  
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// Array to store skills
+			let skills = [];
+			fetchSkills();
+			// Function to add a skill
+			function addSkill() {
+				const skillInput = document.getElementById("skillInput");
+				const skill = skillInput.value.trim();
+				
+				if (skill && !skills.includes(skill)) {
+					skills.push(skill);
+					renderSkills();
+					skillInput.value = ""; // Clear input
+				}
+			}
+		
+			// Function to remove a skill
+			function removeSkill(skill) {
+				skills = skills.filter(s => s !== skill);
+				renderSkills();
+			}
+		
+			// function fetchSkills() {
+			// 	fetch('/profile',{
+			// 		method: 'GET',
+			// 	headers: {
+			// 		'Content-Type': 'application/json',
+			// 		'X-CSRFToken': '{{ csrf_token }}'  // Django's CSRF token for security
+			// 	}
+			// 	})
+			// 		.then(response => response.json())
+			// 		.then(data => {
+			// 			    console.log(skills);
+			// 				skillsArray = data.skills; // Store fetched skills
+			// 				// updateSkillsDisplay();
+			// 				const skillsContainer = document.getElementById("skillsContainer");
+			// 	skillsContainer.innerHTML = "";
+			// 				skillsArray.forEach(skill => {
+			// 					const skillTag = document.createElement("span");
+			// 					skillTag.className = "badge bg-primary d-flex align-items-center text-white rounded";
+			// 					skillTag.style.margin = "5px";
+			// 					skillTag.innerHTML = `
+			// 						${skill}
+			// 						<a href="#" class="btn-close btn-close-white rounded-circle mx-2 text-white my-1 text-decoration-none" aria-label="Remove" onclick="removeSkill('${skill}')"> x </a>
+			// 					`;
+			// 					skillsContainer.appendChild(skillTag);
+			// 				});
+								
+			// 		})
+			// 		.catch(error => console.error('Error:', error));
+			// }
+
+
+			// Function to render skills as tags
+			function renderSkills() {
+				const skillsContainer = document.getElementById("skillsContainer");
+				skillsContainer.innerHTML = ""; // Clear existing skills
+		        
+				skills.forEach(skill => {
+					const skillTag = document.createElement("span");
+					skillTag.className = "badge bg-primary d-flex align-items-center text-white rounded";
+					skillTag.style.margin = "5px";
+					skillTag.innerHTML = `
+						${skill}
+						<a href="#" class="btn-close btn-close-white rounded-circle mx-2 text-white my-1 text-decoration-none" aria-label="Remove" onclick="removeSkill('${skill}')"> x </a>
+					`;
+					skillsContainer.appendChild(skillTag);
+				});
+			}
+		
+			function saveSkills() {
+				fetch('/profile', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': '{{ csrf_token }}'  // Django's CSRF token for security
+					},
+					body: JSON.stringify({ skills: skills })
+					})
+					.then(response => response.json())
+					.then(data => {
+					if (data.status === 'success') {
+						$('#skillsModal').modal('hide');
+						// $('#successModal').modal('show');
+						window.location.reload();
+					} else {
+						alert("Error saving skills. Please try again.");
+					}
+				})
+				.catch(error => console.error("Error:", error));
+			}
+
+			document.getElementById("reloadButton").addEventListener("click", function() {
+				location.reload();
+			});
+
+			// function sendCredits() {
+
+			// 	fetch('/profile', {
+			// 		method: 'POST',
+			// 		headers: {
+			// 			'Content-Type': 'application/json',
+			// 			'X-CSRFToken': '{{ csrf_token }}'  // Django's CSRF token for security
+			// 		},
+			// 		body: JSON.stringify({ skills: skills })
+			// 		})
+			// 		.then(response => response.json())
+			// 		.then(data => {
+			// 		if (data.status === 'success') {
+			// 			$('#skillsModal').modal('hide');
+			// 			// $('#successModal').modal('show');
+			// 			window.location.reload();
+			// 		} else {
+			// 			alert("Error saving skills. Please try again.");
+			// 		}
+			// 		})
+			// 		.catch(error => console.error("Error:", error));
+			// }
+
+			document.getElementById("reloadButton").addEventListener("click", function() {
+				location.reload();
+			});
+		</script>
+
+		<script>
+			document.getElementById('sendCreditButton').addEventListener('click', async () => {
+				const email = document.getElementById('emailInput').value;
+				const credit = document.getElementById('creditInput').value;
+
+				const csrfToken = '{{ csrf_token }}'; // Pass CSRF token from Django template
+
+				const response = await fetch("{% url 'send_credit' %}", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-CSRFToken": csrfToken // CSRF token for protection
+					},
+					body: JSON.stringify({
+						email: email,
+						credit: credit
+					})
+				});
+
+				var snackbar = document.getElementById('snackbar');
+				const result = await response.json();
+				if (response.ok) {
+					snackbar.innerHTML = result.message;
+					snackbar.className = "show";
+					console.log(result.message);
+					$('#creditsModal').modal('hide');
+				} else {
+					snackbar.innerHTML = result.error;
+					snackbar.className = "show";
+					$('#creditsModal').modal('hide');
+				}
+				setTimeout(function(){ window.location.reload(); }, 2500);
+			});
+		</script>
+{% endblock %}

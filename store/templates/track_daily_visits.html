@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h3 class="mt-4">Welcome!</h3>
+    <p>Name : {{ name }}</p>
+    <h5>Today's Visits</h5>
+    <p>You have visited the website {{ visit_count_today }} times today.</p>
+    <h5>Visit History</h5>
+    <ul>
+        {% for date, count in visit_history.items %}
+            <li>{{ date }}: {{ count }} visits</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

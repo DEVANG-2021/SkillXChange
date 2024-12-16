@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div>
+        <h3 class="mb-4" style="display: inline-block;">Scheduled Meetings</h3>
+        <a href="/schedule_meeting_page" class="btn btn-primary float-right inline-block" style="display: inline-block;">Schedule Meeting <i class="fas fa-calendar ml-1"></i></a>
+    </div>
+    <table class="table mt-2">
+        {% if meetings %}
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Meeting Title</th>
+            <!-- <th scope="col">Scheduled by</th> -->
+            <th scope="col">Meeting Link</th>
+            <th scope="col">Meeting Date</th>
+            <th scope="col">Meeting time</th>
+            <th scope="col">Meeting Code</th>
+            <th scope="col">Join</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for meeting in meetings %}
+                <tr>
+                    <th>{{ meeting.title }}</th>
+                    <!-- <td>{{ meeting.scheduled_by }}</td> -->
+                    <td><a href="{{ meeting.meeting_link }}">{{ meeting.meeting_link }}</td>
+                    <td>{{ meeting.date }}</td>
+                    <td>{{ meeting.time  }}</td>
+                    <td>{{ meeting.meeting_code }}</td>
+                    <td><a href="http://127.0.0.1:8000/meeting?roomID={{ meeting.meeting_code }}" target="_blank" class="btn btn-primary">Join</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        {% else %}
+            <h5 class="text-warning text-center">No Meeting Scheduled till now !!</h5>
+        {% endif %}
+      </table>
+</div>
+
+<script>
+    document.getElementById('scheduleButton').addEventListener('click', async () => {
+        const meetingTitle = document.getElementById('meeting_title').value;
+        const customerSelect = document.getElementById('customers');
+        const selectedCustomers = Array.from(customerSelect.selectedOptions).map(opt => opt.value);
+
+        const csrfToken = '{{ csrf_token }}'; // Pass CSRF token from Django template
+
+        const response = await fetch("{% url 'schedule_meeting' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({
+                meeting_title: meetingTitle,
+                selected_customers: selectedCustomers
+            })
+        });
+
+        const messageBox = document.getElementById('message-box');
+        const result = await response.json();
+        if (response.ok) {
+            messageBox.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+        } else {
+            messageBox.innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+        }
+        setTimeout(function(){ window.location.reload(); }, 4000);
+    });
+</script>
+{% endblock %}

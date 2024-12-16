@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Search Results for "{{ query }}":</h3>
+    
+    {% if customers %}
+        <ul class="list-group">
+            {% for customer in customers %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 mb-2" style="cursor: pointer;">
+                <a href="{% url 'user_profile' customer.id %}" style="text-decoration: none;">
+                    <div class="inline-block">
+                            <img src="{{ customer.image.url }}" alt="avatar"
+                            class="rounded-circle img-fluid" style="width: 50px;">
+                        
+                            <strong class="h5 mx-2">{{ customer.first_name }} {{ customer.last_name }}</strong>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found for your search.</p>
+    {% endif %}
+    <a href="#" class="btn btn-primary" onclick="goBack()">Back</a>
+</div>
+<script>
+  function goBack() {
+    window.history.back();
+  }
+</script>
+{% endblock %}

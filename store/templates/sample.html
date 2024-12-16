@@ -1,0 +1,243 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Navigation Bar</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Styling for the bottom navigation bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f8f9fa;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: #6c757d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      border-radius: 10px;
+      transition: all 0.3s ease-in-out;
+    }
+    .bottom-nav a:hover {
+      background-color: #e9ecef;
+      color: #495057;
+    }
+    .bottom-nav a.active {
+      background-color: #0d6efd;
+      color: #fff;
+    }
+    .bottom-nav i {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+    .bottom-nav span {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bottom-nav">
+  <a href="home.html" class="active">
+    <i class="bi bi-house-fill"></i>
+    <span>Home</span>
+  </a>
+  <a href="notifications.html">
+    <i class="bi bi-bell-fill"></i>
+    <span>Notifications</span>
+  </a>
+  <a href="chat.html">
+    <i class="bi bi-chat-dots-fill"></i>
+    <span>Chat</span>
+  </a>
+  <a href="profile.html">
+    <i class="bi bi-person-fill"></i>
+    <span>Profile</span>
+  </a>
+  <a href="meetings.html">
+    <i class="bi bi-camera-video-fill"></i>
+    <span>Meetings</span>
+  </a>
+  <a href="search.html">
+    <i class="bi bi-search"></i>
+    <span>Search</span>
+  </a>
+  <a href="connections.html">
+    <i class="bi bi-people-fill"></i>
+    <span>Connections</span>
+  </a>
+</div>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unique Learning Platform</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Custom styles */
+    .hero {
+      background: linear-gradient(to bottom right, #0d6efd, #007bff);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+    .course-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .course-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .activity-feed {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .activity-item {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+    .activity-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    footer {
+      background-color: #0d6efd;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+    }
+    footer a {
+      color: #d1e0ff;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero Section -->
+<section class="hero">
+  <h1>Welcome to LearnHub</h1>
+  <p>Empower your skills with top-notch courses and connect with a vibrant learning community.</p>
+  <button class="btn btn-light btn-lg mt-3">Explore Courses</button>
+</section>
+
+<!-- Featured Courses -->
+<div class="container my-5">
+  <h2 class="text-center mb-4">Featured Courses</h2>
+  <div class="row g-4">
+    <!-- Course Card -->
+    <div class="col-md-4">
+      <div class="card course-card">
+        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Course 1">
+        <div class="card-body">
+          <h5 class="card-title">Mastering Web Development</h5>
+          <p class="card-text">Learn HTML, CSS, JavaScript, and React to build stunning websites.</p>
+          <a href="#" class="btn btn-primary">Start Learning</a>
+        </div>
+      </div>
+    </div>
+    <!-- Course Card -->
+    <div class="col-md-4">
+      <div class="card course-card">
+        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Course 2">
+        <div class="card-body">
+          <h5 class="card-title">Data Science Bootcamp</h5>
+          <p class="card-text">Dive into Python, Machine Learning, and AI with this comprehensive course.</p>
+          <a href="#" class="btn btn-primary">Start Learning</a>
+        </div>
+      </div>
+    </div>
+    <!-- Course Card -->
+    <div class="col-md-4">
+      <div class="card course-card">
+        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Course 3">
+        <div class="card-body">
+          <h5 class="card-title">UI/UX Design Fundamentals</h5>
+          <p class="card-text">Master the art of creating visually appealing and user-friendly designs.</p>
+          <a href="#" class="btn btn-primary">Start Learning</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Activity Feed -->
+<div class="container my-5">
+  <h2 class="text-center mb-4">Your Learning Activity</h2>
+  <div class="activity-feed">
+    <!-- Activity Item -->
+    <div class="activity-item">
+      <img src="https://via.placeholder.com/50" alt="User">
+      <div>
+        <strong>John Doe</strong> completed the course <em>"Mastering Web Development"</em>.
+      </div>
+    </div>
+    <!-- Activity Item -->
+    <div class="activity-item">
+      <img src="https://via.placeholder.com/50" alt="User">
+      <div>
+        <strong>Jane Smith</strong> started the course <em>"Data Science Bootcamp"</em>.
+      </div>
+    </div>
+    <!-- Activity Item -->
+    <div class="activity-item">
+      <img src="https://via.placeholder.com/50" alt="User">
+      <div>
+        <strong>Michael Johnson</strong> liked your comment on <em>"UI/UX Design Fundamentals"</em>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>© 2024 LearnHub. All Rights Reserved. | <a href="#">Privacy Policy</a></p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

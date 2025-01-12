@@ -21,3 +21,4 @@ psycopg2
 psycopg
 agora-token-builder
 gunicorn
+whitenoise[brotli]

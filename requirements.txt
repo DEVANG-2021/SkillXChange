@@ -20,3 +20,4 @@ dj-database-url
 psycopg2
 psycopg
 agora-token-builder
+gunicorn

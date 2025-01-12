@@ -19,4 +19,4 @@ wrapt==1.12.1
 dj-database-url==2.3.0
 psycopg2==2.9.10
 psycopg==3.2
-agora-token-builder==2.0.3
+agora-token-builder==1.0.0
